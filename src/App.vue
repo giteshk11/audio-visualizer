@@ -1,36 +1,60 @@
 <template>
-  <Renderer ref="rendererC" antialias :orbit-ctrl="{ enableDamping: true }" resize="window">
-    <Camera :position="{ z: 10 }" />
-    <Scene>
-      <PointLight :position="{ y: 50, z: 50 }" />
-      <Box :size="1" ref="meshC" :rotation="{ y: Math.PI / 4, z: Math.PI / 4 }">
-        <LambertMaterial />
-      </Box>
-    </Scene>
-  </Renderer>
+    <Renderer ref="rendererC" antialias :orbit-ctrl="{ enableDamping: true }" resize="window">
+        <Camera :position="{ z: 10 }" />
+        <Scene>
+            <PointLight :position="{ y: 50, z: 50 }" :color="'red'" />
+            <Box
+                :size="2"
+                ref="meshC"
+                :rotation="{ y: Math.PI / 4, z: Math.PI / 4 }"
+                @click="startSong()"
+            >
+                <LambertMaterial />
+            </Box>
+        </Scene>
+    </Renderer>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { Box, Camera, LambertMaterial, MeshPublicInterface, PointLight, Renderer, RendererPublicInterface, Scene } from 'troisjs'
+import { ref, onMounted } from 'vue';
+import { loadSong } from './audioAnalyser';
+import {
+    Box,
+    Camera,
+    LambertMaterial,
+    MeshPublicInterface,
+    PointLight,
+    Renderer,
+    RendererPublicInterface,
+    Scene,
+} from 'troisjs';
 
-const rendererC = ref()
-const meshC = ref()
+const rendererC = ref();
+const meshC = ref();
+const audio = loadSong();
+const isPlaying = ref(false);
 
 onMounted(() => {
-  const renderer = rendererC.value as RendererPublicInterface
-  const mesh = (meshC.value as MeshPublicInterface).mesh
-  renderer.onBeforeRender(() => {
-    mesh!.rotation.x += 0.01
-  })
-})
+    const renderer = rendererC.value as RendererPublicInterface;
+    const mesh = (meshC.value as MeshPublicInterface).mesh;
+    renderer.onBeforeRender(() => {
+        mesh!.rotation.x += 0.01;
+    });
+});
+
+function startSong() {
+    isPlaying.value ? audio.play() : audio.pause();
+    isPlaying.value = !isPlaying.value;
+}
 </script>
+xw
 
 <style>
-body, html {
-  margin: 0;
+xw body,
+html {
+    margin: 0;
 }
 canvas {
-  display: block;
+    display: block;
 }
 </style>
