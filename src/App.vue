@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { loadSong } from './audioAnalyser';
+import { loadSong, analyseAudio } from './audioAnalyser';
 import {
     Box,
     Camera,
@@ -31,7 +31,7 @@ import {
 
 const rendererC = ref();
 const meshC = ref();
-const audio = loadSong();
+const { audio, analyser } = loadSong();
 const isPlaying = ref(false);
 
 onMounted(() => {
@@ -39,6 +39,7 @@ onMounted(() => {
     const mesh = (meshC.value as MeshPublicInterface).mesh;
     renderer.onBeforeRender(() => {
         mesh!.rotation.x += 0.01;
+        analyseAudio(analyser);
     });
 });
 
