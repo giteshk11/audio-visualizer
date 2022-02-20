@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { loadSong, analyseAudio } from './audioAnalyser';
+import { loadSong, analyseAudio, loadAudioContext, setupAnalyser } from './audioAnalyser';
 import {
     Box,
     Camera,
@@ -31,8 +31,11 @@ import {
 
 const rendererC = ref();
 const meshC = ref();
-const { audio, analyser } = loadSong();
-const isPlaying = ref(false);
+const audio = loadSong();
+const { source, audioCtx } = loadAudioContext(audio);
+const analyser = setupAnalyser({ source, audioCtx });
+analyseAudio(analyser);
+const isPlaying = ref(true);
 
 onMounted(() => {
     const renderer = rendererC.value as RendererPublicInterface;
@@ -43,7 +46,8 @@ onMounted(() => {
     });
 });
 
-function startSong() {
+async function startSong() {
+    await audioCtx.resume();
     isPlaying.value ? audio.play() : audio.pause();
     isPlaying.value = !isPlaying.value;
 }
